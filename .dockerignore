@@ -1,0 +1,16 @@
+target/
+.git/
+.github/
+.idea/
+.vscode/
+.env
+.env.local
+.DS_Store
+*.log
+node_modules/
+/dist/
+/pkg/
+.fly/
+docs/
+*.md
+!README.md
