@@ -1,0 +1,39 @@
+# Rust
+/target/
+**/*.rs.bk
+Cargo.lock.bak
+
+# Leptos
+/pkg/
+/dist/
+/node_modules/
+
+# sqlx (cache committé MAIS pas les fichiers temporaires)
+.sqlx-query-*.json
+
+# Env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Fly
+.fly/
+fly.pid
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# OS
+Thumbs.db
