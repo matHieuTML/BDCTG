@@ -1,8 +1,15 @@
 use leptos::prelude::*;
-use leptos_meta::{provide_meta_context, Link, Meta, MetaTags, Stylesheet, Title};
+use leptos_meta::{provide_meta_context, Link, Meta, MetaTags, Stylesheet};
 use leptos_router::{
-    components::{Route, Router, Routes},
+    components::{ParentRoute, Route, Router, Routes},
     StaticSegment,
+};
+
+use crate::components::layout::Layout;
+use crate::pages::{
+    about::AboutPage, associations::AssociationsPage, contact::ContactPage,
+    dashboard::DashboardPage, home::HomePage, login::LoginPage, not_found::NotFoundPage,
+    programme::ProgrammePage, register::RegisterPage,
 };
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
@@ -29,22 +36,24 @@ pub fn App() -> impl IntoView {
 
     view! {
         <Stylesheet id="leptos" href="/pkg/solimouv.css" />
-        <Title text="Solimouv' — Festival sportif inclusif" />
-        <Meta
-            name="description"
-            content="Festival Solimouv' organisé par Up Sport! — le sport pour tous, quels que soient le genre, l'origine ou le parcours de vie."
-        />
-        <Meta name="theme-color" content="#0A7EA4" />
+        <Meta name="theme-color" content="#FC547D" />
         <Link rel="manifest" href="/manifest.json" />
         <Link rel="icon" href="/favicon.ico" />
-        <Link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <Link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
 
         <Router>
-            <main>
-                <Routes fallback=|| view! { <p>"Page introuvable."</p> }>
+            <Routes fallback=NotFoundPage>
+                <ParentRoute path=StaticSegment("") view=Layout>
                     <Route path=StaticSegment("") view=HomePage />
-                </Routes>
-            </main>
+                    <Route path=StaticSegment("a-propos") view=AboutPage />
+                    <Route path=StaticSegment("programme") view=ProgrammePage />
+                    <Route path=StaticSegment("associations") view=AssociationsPage />
+                    <Route path=StaticSegment("contact") view=ContactPage />
+                    <Route path=StaticSegment("connexion") view=LoginPage />
+                    <Route path=StaticSegment("inscription") view=RegisterPage />
+                    <Route path=StaticSegment("mon-espace") view=DashboardPage />
+                </ParentRoute>
+            </Routes>
         </Router>
 
         <ServiceWorkerRegistration />
@@ -58,52 +67,4 @@ fn ServiceWorkerRegistration() -> impl IntoView {
             r#"if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(console.error); }); }"#
         </script>
     }
-}
-
-#[component]
-fn HomePage() -> impl IntoView {
-    let db_time = Resource::new(|| (), |_| async move { get_db_time().await });
-
-    view! {
-        <section class="hero">
-            <h1>"Hello Solimouv' 🏅"</h1>
-            <p class="tagline">"Le festival du sport pour tous, par Up Sport!"</p>
-            <div class="card">
-                <h2>"Statut infrastructure"</h2>
-                <Suspense fallback=move || view! { <p>"Vérification de la connexion Postgres…"</p> }>
-                    {move || Suspend::new(async move {
-                        match db_time.await {
-                            Ok(time) => view! {
-                                <p class="status ok">
-                                    <span>"✅ Postgres connecté — heure serveur : "</span>
-                                    <code>{time}</code>
-                                </p>
-                            }.into_any(),
-                            Err(e) => view! {
-                                <p class="status ko">
-                                    "❌ Erreur Postgres : " {e.to_string()}
-                                </p>
-                            }.into_any(),
-                        }
-                    })}
-                </Suspense>
-            </div>
-            <footer>
-                <p>"Spike Leptos 0.7 + Axum + sqlx + Fly.io"</p>
-            </footer>
-        </section>
-    }
-}
-
-#[server(GetDbTime, "/api")]
-pub async fn get_db_time() -> Result<String, ServerFnError> {
-    use crate::server::db::db_now;
-    use sqlx::PgPool;
-
-    let pool = use_context::<PgPool>()
-        .ok_or_else(|| ServerFnError::new("Database pool not available in server context"))?;
-
-    db_now(&pool)
-        .await
-        .map_err(|e| ServerFnError::new(format!("DB error: {}", e)))
 }

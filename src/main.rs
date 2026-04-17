@@ -1,12 +1,14 @@
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
+    use axum::routing::get;
     use axum::Router;
     use leptos::prelude::*;
     use leptos_axum::{generate_route_list, LeptosRoutes};
     use solimouv::app::{shell, App};
     use solimouv::fileserv::file_and_error_handler;
     use solimouv::server::db::init_pool;
+    use solimouv::server::seo::{robots_handler, sitemap_handler};
     use tower_http::compression::CompressionLayer;
     use tower_http::trace::TraceLayer;
 
@@ -35,6 +37,8 @@ async fn main() {
 
     let pool_for_ctx = pool.clone();
     let app = Router::new()
+        .route("/sitemap.xml", get(sitemap_handler))
+        .route("/robots.txt", get(robots_handler))
         .leptos_routes_with_context(
             &leptos_options,
             routes,

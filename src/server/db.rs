@@ -10,14 +10,3 @@ pub async fn init_pool() -> Result<PgPool, sqlx::Error> {
         .connect(&database_url)
         .await
 }
-
-pub async fn db_now(pool: &PgPool) -> Result<String, sqlx::Error> {
-    let row: (chrono::DateTime<chrono::Utc>,) =
-        sqlx::query_as("SELECT NOW()").fetch_one(pool).await?;
-
-    sqlx::query("INSERT INTO health_check DEFAULT VALUES")
-        .execute(pool)
-        .await?;
-
-    Ok(row.0.to_rfc3339())
-}

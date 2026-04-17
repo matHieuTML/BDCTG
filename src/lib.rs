@@ -1,4 +1,10 @@
 pub mod app;
+pub mod auth;
+pub mod components;
+pub mod data;
+pub mod inscriptions;
+pub mod models;
+pub mod pages;
 
 #[cfg(feature = "ssr")]
 pub mod fileserv;
