@@ -37,3 +37,9 @@ yarn-debug.log*
 
 # OS
 Thumbs.db
+
+
+credentials.md
+
+# Claude Code
+.claude/
