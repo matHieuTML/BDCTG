@@ -7,9 +7,6 @@ FROM rustlang/rust:nightly-bookworm AS builder
 RUN cargo install cargo-binstall --locked && \
     cargo binstall --no-confirm --locked cargo-leptos
 
-# Cible WASM
-RUN rustup target add wasm32-unknown-unknown
-
 # Dépendances système pour sqlx (TLS native-roots)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     pkg-config libssl-dev ca-certificates && \
@@ -17,17 +14,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copier d'abord les manifestes pour caching optimal des deps
-COPY Cargo.toml rust-toolchain.toml ./
-
-# Copier le reste du projet (sources, public, migrations, style, .sqlx)
+# Copier le projet
 COPY . .
 
-# sqlx offline : requiert le cache .sqlx/ committé dans le repo
 ENV SQLX_OFFLINE=true
 
-# Build release (serveur + WASM client)
-RUN cargo leptos build --release -vv
+# Target WASM + build dans le même layer pour éviter le cross-device rename
+RUN rustup target add wasm32-unknown-unknown && \
+    cargo leptos build --release -vv
 
 ################################################################################
 # Stage 2 — Runtime
