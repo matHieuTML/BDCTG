@@ -1,0 +1,27 @@
+{
+  "name": "Solimouv' — Festival sportif inclusif",
+  "short_name": "Solimouv'",
+  "description": "Le festival du sport pour tous, par Up Sport!",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#0A7EA4",
+  "lang": "fr",
+  "categories": ["sports", "social", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

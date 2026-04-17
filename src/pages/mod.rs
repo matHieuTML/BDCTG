@@ -1,0 +1,10 @@
+pub mod about;
+pub mod admin_dashboard;
+pub mod associations;
+pub mod contact;
+pub mod dashboard;
+pub mod home;
+pub mod login;
+pub mod not_found;
+pub mod programme;
+pub mod register;
