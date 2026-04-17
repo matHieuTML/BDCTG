@@ -18,10 +18,10 @@ WORKDIR /app
 COPY . .
 
 ENV SQLX_OFFLINE=true
+ENV RUSTUP_PERMIT_COPY_RENAME=yes
 
-# Target WASM + build dans le même layer pour éviter le cross-device rename
-RUN rustup target add wasm32-unknown-unknown && \
-    cargo leptos build --release -vv
+# rust-toolchain.toml installe le bon nightly + wasm32 target automatiquement
+RUN cargo leptos build --release -vv
 
 ################################################################################
 # Stage 2 — Runtime
