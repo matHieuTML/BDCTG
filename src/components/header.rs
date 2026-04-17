@@ -1,11 +1,16 @@
 use leptos::prelude::*;
 use leptos_router::components::A;
+use leptos_router::hooks::use_location;
 
 use crate::auth::{get_current_user, Logout};
 
 #[component]
 pub fn Header() -> impl IntoView {
-    let user_resource = Resource::new(|| (), |_| async move { get_current_user().await });
+    let location = use_location();
+    let user_resource = Resource::new(
+        move || location.pathname.get(),
+        |_| async move { get_current_user().await },
+    );
     let logout_action = ServerAction::<Logout>::new();
     let (menu_open, set_menu_open) = signal(false);
 

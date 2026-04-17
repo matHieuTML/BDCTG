@@ -1,6 +1,5 @@
-const CACHE_NAME = "solimouv-v1";
+const CACHE_NAME = "solimouv-v2";
 const CORE_ASSETS = [
-  "/",
   "/manifest.json",
   "/favicon.ico",
   "/icons/icon-192.png",
@@ -37,8 +36,24 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);
+
+  if (!url.protocol.startsWith("http")) return;
+
   if (url.pathname.startsWith("/api/")) {
     event.respondWith(fetch(request));
+    return;
+  }
+
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          return response;
+        })
+        .catch(() => caches.match(request).then((c) => c || caches.match("/")))
+    );
     return;
   }
 
